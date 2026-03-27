@@ -3,8 +3,8 @@
 /**
  * Point d'entrée du serveur MCP météo.
  * Supporte deux modes de transport via la variable d'environnement MCP_TRANSPORT :
- *   - "stdio" (défaut) : communication par stdin/stdout, utilisé par Claude Desktop
- *   - "http"           : serveur Express sur HTTP_PORT (défaut 3000), utilisé par les clients HTTP
+ *   - "http" (défaut)  : serveur Express sur HTTP_PORT (défaut 3000), utilisé par les clients HTTP
+ *   - "stdio"          : communication par stdin/stdout, utilisé par Claude Desktop
  */
 
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
@@ -67,7 +67,7 @@ async function startHttp() {
 // ─── Démarrage ────────────────────────────────────────────────────────────────
 
 async function main() {
-  const mode = process.env.MCP_TRANSPORT ?? "stdio";
+  const mode = process.env.MCP_TRANSPORT ?? "http";
 
   if (mode === "http") {
     await startHttp();

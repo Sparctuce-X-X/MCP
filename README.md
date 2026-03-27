@@ -18,7 +18,7 @@ Données fournies par [Open-Meteo](https://open-meteo.com/) — API gratuite, sa
 
 ```
 mcp-server-demo/
-├── index.js                  # Point d'entrée — démarre le transport (stdio ou HTTP)
+├── index.js                  # Point d'entrée — démarre le transport (HTTP ou stdio)
 ├── server.js                 # Factory createServer() — instancie et configure le serveur MCP
 ├── services/
 │   └── weatherService.js     # Appels API Open-Meteo + décodage des codes météo WMO
@@ -41,35 +41,12 @@ npm install
 
 ## Utilisation
 
-### Mode stdio (Claude Desktop)
+### Mode HTTP
 
-Le mode par défaut. Le serveur communique via `stdin`/`stdout`, c'est le mode attendu par Claude Desktop.
+Le mode par défaut. Le serveur démarre un serveur Express. Chaque requête `POST /mcp` est traitée de façon **stateless** (une instance MCP par requête).
 
 ```bash
 npm start
-```
-
-**Configuration Claude Desktop** — éditer `~/Library/Application Support/Claude/claude_desktop_config.json` :
-
-```json
-{
-  "mcpServers": {
-    "weather": {
-      "command": "node",
-      "args": ["/chemin/absolu/vers/mcp-server-demo/index.js"]
-    }
-  }
-}
-```
-
----
-
-### Mode HTTP
-
-Le serveur démarre un serveur Express. Chaque requête `POST /mcp` est traitée de façon **stateless** (une instance MCP par requête).
-
-```bash
-npm run start:http
 # → http://localhost:3000
 ```
 
@@ -84,8 +61,34 @@ HTTP_PORT=8080 npm run start:http:port
 
 | Variable | Valeur | Défaut |
 |----------|--------|--------|
-| `MCP_TRANSPORT` | `stdio` \| `http` | `stdio` |
+| `MCP_TRANSPORT` | `http` \| `stdio` | `http` |
 | `HTTP_PORT` | numéro de port | `3000` |
+
+---
+
+### Mode stdio (Claude Desktop)
+
+Pour forcer le mode `stdio` (par exemple avec Claude Desktop), définissez `MCP_TRANSPORT=stdio`.
+
+```bash
+MCP_TRANSPORT=stdio npm start
+```
+
+**Configuration Claude Desktop** — éditer `~/Library/Application Support/Claude/claude_desktop_config.json` :
+
+```json
+{
+  "mcpServers": {
+    "weather": {
+      "command": "node",
+      "args": ["/chemin/absolu/vers/mcp-server-demo/index.js"],
+      "env": {
+        "MCP_TRANSPORT": "stdio"
+      }
+    }
+  }
+}
+```
 
 ---
 
